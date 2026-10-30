@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f6f6b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Populele – mes chansons</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="top-title">Mes chansons</h1>
+    <button id="conn-btn" class="conn conn-disconnected" aria-live="polite">
+      <span class="dot"></span><span id="conn-label">Connecter</span>
+    </button>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main>
+    <!-- Liste des chansons -->
+    <section id="view-songs" class="view">
+      <input id="song-search" class="search" type="search" placeholder="Chercher une chanson…">
+      <ul id="song-list" class="song-list"></ul>
+      <button id="add-song" class="btn primary wide">+ Ajouter une chanson</button>
+    </section>
+
+    <!-- Édition -->
+    <section id="view-edit" class="view" hidden>
+      <label class="field">Titre<input id="edit-title" type="text"></label>
+      <label class="field">Artiste<input id="edit-artist" type="text"></label>
+      <label class="field">Accords et paroles
+        <textarea id="edit-text" rows="14" spellcheck="false" placeholder="Colle ici les accords et paroles copiés sur un site, par exemple :
+
+C          G
+Au clair de la lune
+
+ou bien :
+[C]Au clair de la [G]lune"></textarea>
+      </label>
+      <p class="hint">Astuce : sur un site d'accords, sélectionne tout le texte de la chanson, copie-le, puis colle-le ici. Les accords en français (Do, Ré, Lam…) marchent aussi.</p>
+      <div class="row">
+        <button id="edit-cancel" class="btn">Annuler</button>
+        <button id="edit-save" class="btn primary">Enregistrer</button>
+      </div>
+      <button id="edit-delete" class="btn danger wide">Supprimer la chanson</button>
+    </section>
+
+    <!-- Lecture -->
+    <section id="view-play" class="view" hidden>
+      <div class="now">
+        <div class="now-main">
+          <div id="cur-name" class="cur-name">–</div>
+          <div id="cur-diagram" class="diagram"></div>
+        </div>
+        <div class="now-next">
+          <div class="next-label">ensuite</div>
+          <div id="next-name" class="next-name">–</div>
+          <div id="next-diagram" class="diagram small"></div>
+        </div>
+      </div>
+      <div id="lyrics" class="lyrics"></div>
+      <div class="play-tools">
+        <div class="tool-group">
+          <span>Tonalité</span>
+          <button id="tr-down" class="btn small">−</button>
+          <span id="tr-val">0</span>
+          <button id="tr-up" class="btn small">+</button>
+        </div>
+        <div class="tool-group">
+          <span>Tempo</span>
+          <button id="bpm-down" class="btn small">−</button>
+          <span id="bpm-val">90</span>
+          <button id="bpm-up" class="btn small">+</button>
+        </div>
+        <div class="tool-group">
+          <span>Temps / accord</span>
+          <button id="beats-down" class="btn small">−</button>
+          <span id="beats-val">4</span>
+          <button id="beats-up" class="btn small">+</button>
+        </div>
+        <label class="tool-group"><input id="click-on" type="checkbox"> Bip du métronome</label>
+        <button id="play-edit" class="btn small">Modifier la chanson</button>
+      </div>
+      <div class="play-bar">
+        <button id="prev" class="btn big" aria-label="Accord précédent">◀</button>
+        <button id="auto" class="btn big auto">▶ Auto</button>
+        <button id="next" class="btn big primary" aria-label="Accord suivant">Suivant ▶</button>
+      </div>
+      <div id="beat-dots" class="beat-dots"></div>
+    </section>
+
+    <!-- Accords -->
+    <section id="view-chords" class="view" hidden>
+      <p class="hint">Choisis un accord : il s'allume sur le manche.</p>
+      <div class="chord-big">
+        <div id="lib-name" class="cur-name">C</div>
+        <div id="lib-diagram" class="diagram"></div>
+      </div>
+      <div id="root-picker" class="picker"></div>
+      <div id="suffix-picker" class="picker"></div>
+    </section>
+
+    <!-- Réglages -->
+    <section id="view-settings" class="view" hidden>
+      <h2>Connexion</h2>
+      <div class="row wrap">
+        <button id="s-connect" class="btn primary">Connecter le Populele</button>
+        <button id="s-connect-all" class="btn">Voir tous les appareils</button>
+        <button id="s-disconnect" class="btn">Déconnecter</button>
+      </div>
+      <p class="hint">Allume d'abord le Populele (appui long 4–5 s sur le bouton). Si rien n'apparaît dans la liste, essaie « Voir tous les appareils ». Il ne faut <b>pas</b> l'appairer dans les réglages Bluetooth de l'iPhone, et l'app PopuMusic doit être fermée.</p>
+
+      <h2>Tester les lumières</h2>
+      <div class="row wrap">
+        <button id="t-all" class="btn">Tout allumer</button>
+        <button id="t-off" class="btn">Tout éteindre</button>
+        <button id="t-walk" class="btn">Case par case</button>
+        <button id="t-c" class="btn">Accord de Do (C)</button>
+      </div>
+
+      <h2>Calibrage</h2>
+      <p class="hint">Avec « Accord de Do », seule la <b>3e case de la corde du bas (La)</b> doit s'allumer. Sinon, ajuste ici.</p>
+      <div class="tool-group">
+        <span>Décalage des cases</span>
+        <button id="off-down" class="btn small">−</button>
+        <span id="off-val">0</span>
+        <button id="off-up" class="btn small">+</button>
+      </div>
+      <label class="check"><input id="rev-strings" type="checkbox"> Inverser l'ordre des cordes</label>
+      <label class="check"><input id="rev-frets" type="checkbox"> Inverser le sens du manche</label>
+
+      <h2>Mes chansons</h2>
+      <div class="row wrap">
+        <button id="export" class="btn">Sauvegarder (copier)</button>
+        <button id="import" class="btn">Restaurer (coller)</button>
+        <button id="reset-demo" class="btn">Remettre les exemples</button>
+      </div>
+
+      <h2>Journal Bluetooth</h2>
+      <pre id="log" class="log"></pre>
+      <button id="copy-log" class="btn small">Copier le journal</button>
+
+      <h2>À propos</h2>
+      <p class="hint">Application libre faite pour le Populele 1. Le protocole Bluetooth vient du projet
+        <a href="https://github.com/serdrad0x/Hackulele" target="_blank" rel="noopener">Hackulele</a> (Apache 2.0).
+        Les sources détaillées sont dans le fichier README du dépôt
+        <a href="https://github.com/Alizee-M/Populele" target="_blank" rel="noopener">Alizee-M/Populele</a>.</p>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-view="songs" class="tab active">🎵<span>Chansons</span></button>
+    <button data-view="chords" class="tab">🎸<span>Accords</span></button>
+    <button data-view="settings" class="tab">⚙️<span>Réglages</span></button>
+  </nav>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
